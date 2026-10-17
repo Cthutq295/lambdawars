@@ -139,7 +139,7 @@ private:
 // Constants for updating the mouse data
 #define MOUSE_TRACE_BOX_MINS Vector(-8.0, -8.0, 0.0)
 #define MOUSE_TRACE_BOX_MAXS Vector(8.0, 8.0, 8.0)
-#define MOUSE_ENT_TOLERANCE 64.0f 
+#define MOUSE_ENT_TOLERANCE 0.0f 
 
 //-----------------------------------------------------------------------------
 // Purpose: Called when we received a new mouse aim vector or when moving around
@@ -242,7 +242,7 @@ void CHL2WarsPlayer::CalculateMouseData( const Vector &vMouseAim, const Vector &
 				fSpeed = pEnt->GetSmoothedVelocity().Length();
 #endif // CLIENT_DLL
 				fDist = (tr.endpos - pEnt->GetAbsOrigin()).Length();
-				if( fDist < MOUSE_ENT_TOLERANCE * Max(0.1, (fSpeed/125.0)) )
+				if( fDist < MOUSE_ENT_TOLERANCE )
 				{
 					if( pBest )
 					{
