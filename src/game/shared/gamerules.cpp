@@ -485,14 +485,14 @@ void CGameRules::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSrc
 					}
 				}
 
-				
+				bool bStartInsideOtherEntity = tr.startsolid && tr.m_pEnt && tr.m_pEnt != pEntity;
 
 				// UNDONE: Probably shouldn't let children block parents either?  Or maybe those guys should set their owner if they want this behavior?
 				// HL2 - Dissolve damage is not reduced by interposing non-world objects
 				//		FIXME: Made the blocking entity ignore the ignore enitity.
 				//			   I don't like the trace that is done here when a blocking entity is done.
 				//			   It ignores the remaining entities. In case of big objects like buildings this fucks up.
-				if( tr.m_pEnt && tr.m_pEnt != pEntity && tr.m_pEnt != pEntityIgnore && tr.m_pEnt->GetOwnerEntity() != pEntity )
+				if( tr.m_pEnt && tr.m_pEnt != pEntity && tr.m_pEnt != pEntityIgnore && tr.m_pEnt->GetOwnerEntity() != pEntity && !bStartInsideOtherEntity )
 				{
 					// Some entity was hit by the trace, meaning the explosion does not have clear
 					// line of sight to the entity that it's trying to hurt. If the world is also
