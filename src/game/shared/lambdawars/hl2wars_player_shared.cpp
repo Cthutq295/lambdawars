@@ -455,19 +455,65 @@ void CHL2WarsPlayer::UpdateButtonState( int nUserCmdButtonMask )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+#ifdef CLIENT_DLL
+static void SendMouseTraceDataCommand( const char *pszCommand, const MouseTraceData_t &data )
+{
+	engine->ServerCmd( VarArgs(
+		"%s "
+		"%f %f %f "
+		"%f %f %f "
+		"%f %f %f "
+		"%f %f %f "
+		"%f %f %f "
+		"%d %d",
+		pszCommand,
+
+		data.m_vStartPos.x,
+		data.m_vStartPos.y,
+		data.m_vStartPos.z,
+
+		data.m_vEndPos.x,
+		data.m_vEndPos.y,
+		data.m_vEndPos.z,
+
+		data.m_vNormal.x,
+		data.m_vNormal.y,
+		data.m_vNormal.z,
+
+		data.m_vWorldOnlyEndPos.x,
+		data.m_vWorldOnlyEndPos.y,
+		data.m_vWorldOnlyEndPos.z,
+
+		data.m_vWorldOnlyNormal.x,
+		data.m_vWorldOnlyNormal.y,
+		data.m_vWorldOnlyNormal.z,
+
+		data.m_hEnt.Get()
+		? data.m_hEnt.GetEntryIndex()
+		: -1,
+
+		data.m_nHitBox
+		) );
+}
+#endif // CLIENT_DLL
+
+//-----------------------------------------------------------------------------
 // Purpose: The following are the internal functions and update the state of mouse
 //			pressing/releasing.
 //-----------------------------------------------------------------------------
 void CHL2WarsPlayer::OnLeftMouseButtonPressedInternal( const MouseTraceData_t &data )
 {
 	m_bIsMouseCleared = false;
+	m_MouseData = data;
 	m_MouseDataLeftPressed = data;
 	m_bIsLeftPressed = true;
 
 	OnLeftMouseButtonPressed( data );
 
 #ifdef CLIENT_DLL
-	engine->ServerCmd( VarArgs("player_lmp %lu", m_MouseDataLeftPressed.m_hEnt.Get() ? m_MouseDataLeftPressed.m_hEnt.GetEntryIndex() : -1) );
+	SendMouseTraceDataCommand( "player_lmp", data );
 #endif // CLIENT_DLL
 }
 
@@ -502,11 +548,12 @@ void CHL2WarsPlayer::OnLeftMouseButtonReleasedInternal( const MouseTraceData_t &
 	if( m_bIsMouseCleared )
 	{
 #ifdef CLIENT_DLL
-		engine->ServerCmd( VarArgs("player_lmr %lu", data.m_hEnt.Get() ? data.m_hEnt.GetEntryIndex() : -1) );
+		SendMouseTraceDataCommand( "player_lmr", data );
 #endif // CLIENT_DLL
 		return;
 	}
 
+	m_MouseData = data;
 	m_MouseDataLeftReleased = data;
 	m_bWasLeftDoublePressed = m_bIsLeftDoublePressed;
 	m_bIsLeftPressed = false;
@@ -516,7 +563,7 @@ void CHL2WarsPlayer::OnLeftMouseButtonReleasedInternal( const MouseTraceData_t &
 
 
 #ifdef CLIENT_DLL
-	engine->ServerCmd( VarArgs("player_lmr %lu", m_MouseDataLeftReleased.m_hEnt.Get() ? m_MouseDataLeftReleased.m_hEnt.GetEntryIndex() : -1) );
+	SendMouseTraceDataCommand( "player_lmr", m_MouseDataLeftReleased );
 #endif // CLIENT_DLL
 }
 
@@ -526,13 +573,14 @@ void CHL2WarsPlayer::OnLeftMouseButtonReleasedInternal( const MouseTraceData_t &
 void CHL2WarsPlayer::OnRightMouseButtonPressedInternal( const MouseTraceData_t &data )
 {
 	m_bIsMouseCleared = false;
+	m_MouseData = data;
 	m_MouseDataRightPressed = data;
 	m_bIsRightPressed = true;
 
 	OnRightMouseButtonPressed( data );
 
 #ifdef CLIENT_DLL
-	engine->ServerCmd( VarArgs("player_rmp %lu", m_MouseDataRightPressed.m_hEnt.Get() ? m_MouseDataRightPressed.m_hEnt.GetEntryIndex() : -1) );
+	SendMouseTraceDataCommand( "player_rmp", data );
 #endif // CLIENT_DLL
 }
 
@@ -562,27 +610,28 @@ void CHL2WarsPlayer::OnRightMouseButtonDoublePressedInternal( const MouseTraceDa
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CHL2WarsPlayer::OnRightMouseButtonReleasedInternal( const MouseTraceData_t &data )
+void CHL2WarsPlayer::OnRightMouseButtonReleasedInternal(const MouseTraceData_t &data)
 {
-	if( m_bIsMouseCleared )
+	if (m_bIsMouseCleared)
 	{
 #ifdef CLIENT_DLL
-		engine->ServerCmd( VarArgs("player_rmr %lu", data.m_hEnt.Get() ? data.m_hEnt.GetEntryIndex() : -1) );
+		SendMouseTraceDataCommand("player_rmr", data);
 #endif // CLIENT_DLL
 		return;
 	}
 
-	m_MouseDataRightReleased = data;	
+	m_MouseData = data;
+	m_MouseDataRightReleased = data;
 	m_bIsRightPressed = false;
 	m_bWasRightDoublePressed = m_bIsRightDoublePressed;
 	m_bIsRightDoublePressed = false;
 
-	OnRightMouseButtonReleased( data );
+	OnRightMouseButtonReleased(data);
 
 #ifdef CLIENT_DLL
-	engine->ServerCmd( VarArgs("player_rmr %lu", m_MouseDataRightReleased.m_hEnt.Get() ? m_MouseDataRightReleased.m_hEnt.GetEntryIndex() : -1) );
+	SendMouseTraceDataCommand("player_rmr", m_MouseDataRightReleased);
 #endif // CLIENT_DLL
-}	
+}
 
 //-----------------------------------------------------------------------------
 // Purpose:
