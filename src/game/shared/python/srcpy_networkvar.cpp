@@ -182,9 +182,6 @@ bp::object CPythonNetworkVar::Str()
 //-----------------------------------------------------------------------------
 void CPythonNetworkVar::NetworkVarsUpdateClient( CBaseEntity *pEnt, int iClient )
 {
-#ifdef USE_WARS_NETWORK
-	WarsNet_WriteEntityData( m_Name.String(), Get(), m_bChangedCallback );
-#else
 	pywrite write;
 	try 
 	{
@@ -215,7 +212,6 @@ void CPythonNetworkVar::NetworkVarsUpdateClient( CBaseEntity *pEnt, int iClient 
 		DevMsg("#%d:%s - %f - PyNetworkVar: %s, Value -> ", pEnt->entindex(), pEnt->GetClassname(), gpGlobals->curtime, m_Name.String());
 		PyPrintElement(write);
 	}
-#endif // USE_WARS_NETWORK
 }
 
 //---------------------------------------------------------------------------------------
@@ -284,9 +280,6 @@ bp::object CPythonNetworkArray::Str()
 //-----------------------------------------------------------------------------
 void CPythonNetworkArray::NetworkVarsUpdateClient( CBaseEntity *pEnt, int iClient )
 {
-#ifdef USE_WARS_NETWORK
-	WarsNet_WriteEntityData( m_Name.String(), m_dataInternal, m_bChangedCallback );
-#else
 	// Parse list
 	int length = 0;
 	CUtlVector<pywrite> writelist;
@@ -331,7 +324,6 @@ void CPythonNetworkArray::NetworkVarsUpdateClient( CBaseEntity *pEnt, int iClien
 			PyPrintElement(writelist.Element(i));
 		}
 	}
-#endif // USE_WARS_NETWORK
 }
 
 //---------------------------------------------------------------------------------------
