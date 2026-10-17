@@ -65,6 +65,7 @@ public:
 	//virtual const Vector		GetPlayerMins( void ) const;
 	//virtual const Vector		GetPlayerMaxs( void ) const;
 
+	bool							ParseMouseTraceData( const CCommand &args, MouseTraceData_t &mousedata );
 	bool							IsStrategicModeOn() const { return GetMoveType() == MOVETYPE_STRATEGIC; }
 	const Vector &					GetMouseAim() { return m_vMouseAim; }
 	const MouseTraceData_t &		GetMouseData() const { return m_MouseData; }

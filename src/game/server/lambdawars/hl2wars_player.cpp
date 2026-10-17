@@ -264,6 +264,50 @@ CBaseEntity *GetEntityFromMouseCommand( int idx )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
+bool CHL2WarsPlayer::ParseMouseTraceData( const CCommand &args, MouseTraceData_t &mousedata )
+{
+	if( args.ArgC() < 18 )
+		return false;
+
+	mousedata.m_vStartPos = Vector(
+		atof(args[1]),
+		atof(args[2]),
+		atof(args[3])
+		);
+
+	mousedata.m_vEndPos = Vector(
+		atof(args[4]),
+		atof(args[5]),
+		atof(args[6])
+		);
+
+	mousedata.m_vNormal = Vector(
+		atof(args[7]),
+		atof(args[8]),
+		atof(args[9])
+		);
+
+	mousedata.m_vWorldOnlyEndPos = Vector(
+		atof(args[10]),
+		atof(args[11]),
+		atof(args[12])
+		);
+
+	mousedata.m_vWorldOnlyNormal = Vector(
+		atof(args[13]),
+		atof(args[14]),
+		atof(args[15])
+		);
+
+	int idx = atol( args[16] );
+	mousedata.m_hEnt = GetEntityFromMouseCommand( idx );
+	mousedata.m_nHitBox = atoi( args[17] );
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
 bool CHL2WarsPlayer::ClientCommand( const CCommand &args )
 {
 	// FIXME: Most commands do not check the number of args.
@@ -406,16 +450,13 @@ bool CHL2WarsPlayer::ClientCommand( const CCommand &args )
 	}
 	else if( !V_stricmp( args[0], "player_lmp" ) )
 	{
-		if( args.ArgC() < 2 )
+		MouseTraceData_t mousedata;
+
+		if( !ParseMouseTraceData( args, mousedata ) )
 		{
-			Warning( "player_lmp: not enough arguments (only %d provided, while 2 needed)\n", args.ArgC() );
+			Warning( "player_lmp: invalid mouse data\n" );
 			return true;
 		}
-
-		MouseTraceData_t mousedata = GetMouseData();
-
-		int idx = atol(args[1]);
-		mousedata.m_hEnt = GetEntityFromMouseCommand( idx );
 
 		OnLeftMouseButtonPressedInternal( mousedata );
 		return true;
@@ -438,32 +479,26 @@ bool CHL2WarsPlayer::ClientCommand( const CCommand &args )
 	}
 	else if( !V_stricmp( args[0], "player_lmr" ) )
 	{
-		if( args.ArgC() < 2 )
+		MouseTraceData_t mousedata;
+
+		if( !ParseMouseTraceData( args, mousedata ) )
 		{
-			Warning( "player_lmr: not enough arguments (only %d provided, while 2 needed)\n", args.ArgC() );
+			Warning( "player_lmr: invalid mouse data\n" );
 			return true;
 		}
-
-		MouseTraceData_t mousedata = GetMouseData();
-
-		int idx = atol(args[1]);
-		mousedata.m_hEnt = GetEntityFromMouseCommand( idx );
 
 		OnLeftMouseButtonReleasedInternal( mousedata );
 		return true;
 	}
 	else if( !V_stricmp( args[0], "player_rmp" ) )
 	{
-		if( args.ArgC() < 2 )
+		MouseTraceData_t mousedata;
+
+		if( !ParseMouseTraceData( args, mousedata ) )
 		{
-			Warning( "player_rmp: not enough arguments (only %d provided, while 2 needed)\n", args.ArgC() );
+			Warning( "player_rmp: invalid mouse data\n" );
 			return true;
 		}
-
-		MouseTraceData_t mousedata = GetMouseData();
-
-		int idx = atol(args[1]);
-		mousedata.m_hEnt = GetEntityFromMouseCommand( idx );
 
 		OnRightMouseButtonPressedInternal( mousedata );
 		return true;
@@ -486,16 +521,13 @@ bool CHL2WarsPlayer::ClientCommand( const CCommand &args )
 	}
 	else if( !V_stricmp( args[0], "player_rmr" ) )
 	{
-		if( args.ArgC() < 2 )
+		MouseTraceData_t mousedata;
+
+		if( !ParseMouseTraceData( args, mousedata ) )
 		{
-			Warning( "player_rmr: not enough arguments (only %d provided, while 2 needed)\n", args.ArgC() );
+			Warning( "player_rmr: invalid mouse data\n" );
 			return true;
 		}
-
-		MouseTraceData_t mousedata = GetMouseData();
-
-		int idx = atol(args[1]);
-		mousedata.m_hEnt = GetEntityFromMouseCommand( idx );
 
 		OnRightMouseButtonReleasedInternal( mousedata );
 		return true;
